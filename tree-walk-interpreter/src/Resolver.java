@@ -42,6 +42,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
 
         for(Stmt.Function method : stmt.methods) {
             FunctionType declaration = FunctionType.METHOD;
+            if (method.name.lexeme.equals("init")) {
+                declaration = FunctionType.INITIALIZER;
+            }
             resolveFunction(method, declaration);
         }
 
@@ -113,6 +116,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
         }
 
         if (stmt.value != null) {
+            if(currentFunction == FunctionType.INITIALIZER) {
+                Main.error(stmt.keyword, "Can't return a value from an initializer.");
+            }
             resolve(stmt.value);
         }
 
