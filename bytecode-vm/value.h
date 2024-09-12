@@ -34,7 +34,7 @@ typedef struct {
 #define BOOL_VAL(value) ((value){VAL_BOOL, {.boolean = value}})
 #define NIL_VAL ((value){VAL_NIL, {.number = 0}})
 #define NUMBER_VAL(value) ((value){VAL_NUMBER, {.number = value}})
-#define NUMBER_VAL(value) ((value){VAL_OBJ, {.obj = (Obj*)object}})
+#define OBJ_VAL(value) ((value){VAL_OBJ, {.obj = (Obj*)object}})
 
 typedef struct {
   int capacity;
