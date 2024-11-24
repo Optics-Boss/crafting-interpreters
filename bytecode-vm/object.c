@@ -22,6 +22,20 @@ static Obj* allocateObject(size_t size, ObjType type) {
   return object;
 }
 
+ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
+  ObjBoundMethod* bound = ALLOCATE_OBJ(ObjBoundMethod, OBJ_BOUND_METHOD);
+  bound->receiver = receiver;
+  bound->method = method;
+  return bound;
+}
+
+ObjClass* newClass(ObjString* name) {
+  ObjClass* klass = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
+  klass->name = name;
+  initTable(&klass->methods);
+  return klass;
+}
+
 ObjClosure* newClosure(ObjFunction* function) {
   ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*, function->upvalueCount);
 
@@ -46,6 +60,13 @@ ObjFunction* newFunction() {
   return function;
 }
 
+ObjInstance* newInstance(ObjClass* klass) {
+  ObjInstance* instance = ALLOCATE_OBJ(ObjInstance, OBJ_INSTANCE);
+  instance->klass = klass;
+  initTable(&instance->fields);
+  return instance;
+}
+
 ObjNative* newNative(NativeFn function) {
   ObjNative* native = ALLOCATE_OBJ(ObjNative, OBJ_NATIVE);
   native->function = function;
@@ -57,7 +78,9 @@ static ObjString* allocateString(char* chars, int length, uint32_t hash) {
   string->length = length;
   string->chars = chars;
   string->hash = hash;
+  push(OBJ_VAL(string));
   tableSet(&vm.strings, string, NIL_VAL);
+  pop();
   return string;
 }
 
@@ -115,11 +138,26 @@ static void printFunction(ObjFunction* function) {
 
 void printObject(Value value) {
   switch (OBJ_TYPE(value)) {
-    case OBJ_NATIVE:
+    case OBJ_BOUND_METHOD: {
+      printFunction(AS_BOUND_METHOD(value)->method->function);
+      break;
+    }
+    case OBJ_CLASS: {
+      printf("%s", AS_CLASS(value)->name->chars);
+      break;
+    }
+    case OBJ_CLOSURE:
       printFunction(AS_CLOSURE(value)->function);
+      break;
+    case OBJ_UPVALUE:
+      printFunction(AS_UPVALUE(value)->function);
       break;
     case OBJ_FUNCTION:
       printFunction(AS_FUNCTION(value));
+      break;
+    case OBJ_INSTANCE:
+      printf("%s instance",
+             AS_INSTANCE(value)->klass->name->chars);
       break;
     case OBJ_NATIVE:
       printf("<native fn>");
