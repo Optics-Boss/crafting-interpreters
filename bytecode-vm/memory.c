@@ -171,12 +171,13 @@ static void markRoots() {
 
   for (ObjUpvalue* upvalue = vm.openUpvalues;
       upvalue != NULL;
-      upvalue = upvalue->next;) {
+      upvalue = upvalue->next) {
     markObject((Obj*)upvalue);
   }
 
   markTable(&vm.globals);
   markCompilerRoots();
+  markObject((Obj*)vm.initString);
 }
 
 static void traceReferences() {
