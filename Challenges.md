@@ -42,5 +42,17 @@ White-space is important for layout sensitive languages for example: Python and 
 
 Comments can be useful for generating documentation based on comments in the code for example with Javadoc. But it can also be used as an source formatter.
 
-## 4
-TODO
+# Chapter 5
+```
+expr → expr ( "(" ( expr ( "," expr )* )? ")" | "." IDENTIFIER )+
+     | IDENTIFIER
+     | NUMBER
+```
+Edited to 
+```
+expr → expr ( "(" ( expr ( "," expr )* )REPEAT ")" | "." IDENTIFIER )AT_LEAST_ONCE
+     OR IDENTIFIER
+     OR NUMBER
+```
+
+
