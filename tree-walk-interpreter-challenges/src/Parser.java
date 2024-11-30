@@ -1,6 +1,3 @@
-//> Parsing Expressions parser
-
-//> Statements and State parser-imports
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +64,7 @@ class Parser {
   private Stmt statement() {
     if (match(TokenType.FOR)) return forStatement();
     if (match(TokenType.IF)) return ifStatement();
+//    if (match(TokenType.LEFT_PAREN)) return ternaryStatement();
     if (match(TokenType.PRINT)) return printStatement();
     if (match(TokenType.RETURN)) return returnStatement();
     if (match(TokenType.WHILE)) return whileStatement();
@@ -131,6 +129,11 @@ class Parser {
 
     return new Stmt.If(condition, thenBranch, elseBranch);
   }
+
+//  private Stmt ternaryStatement() {
+//    //TODO make a ternary statement
+//    return new Stmt.If();
+//  }
 
   private Stmt printStatement() {
     Expr value = expression();
