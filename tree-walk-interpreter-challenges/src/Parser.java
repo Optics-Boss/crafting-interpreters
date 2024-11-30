@@ -17,7 +17,11 @@ class Parser {
   List<Stmt> parse() {
     List<Stmt> statements = new ArrayList<>();
     while (!isAtEnd()) {
-      statements.add(declaration());
+      if (match(TokenType.VAR)) {
+        statements.addAll(varMultipleDeclaration());
+      } else {
+        statements.add(declaration());
+      }
     }
 
     return statements;
@@ -26,11 +30,11 @@ class Parser {
   private Expr expression() {
     return assignment();
   }
+
   private Stmt declaration() {
     try {
       if (match(TokenType.CLASS)) return classDeclaration();
       if (match(TokenType.FUN)) return function("function");
-      if (match(TokenType.VAR)) return varDeclaration();
 
       return statement();
     } catch (ParseError error) {
@@ -155,6 +159,26 @@ class Parser {
 
     consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
     return new Stmt.Var(name, initializer);
+  }
+
+  private List<Stmt> varMultipleDeclaration() {
+    List<Stmt> variables = new ArrayList<>();
+    if(!check(TokenType.SEMICOLON)) {
+      do {
+        Token name = consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+        Expr initializer = null;
+        if (match(TokenType.EQUAL)) {
+          initializer = expression();
+        }
+
+        variables.add(new Stmt.Var(name, initializer));
+      } while (match(TokenType.COMMA));
+    }
+
+    consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+
+    return variables;
   }
 
   private Stmt whileStatement() {
