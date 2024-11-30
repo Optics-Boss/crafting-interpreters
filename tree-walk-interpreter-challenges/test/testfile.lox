@@ -1,3 +1,7 @@
+/*
+ This should be ignored
+*/
+
 var a = "before";
 print a; // expect: before
 

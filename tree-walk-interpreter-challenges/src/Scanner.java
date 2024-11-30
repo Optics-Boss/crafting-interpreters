@@ -59,7 +59,6 @@ class Scanner {
       case '+': addToken(TokenType.PLUS); break;
       case ';': addToken(TokenType.SEMICOLON); break;
       case '*': addToken(TokenType.STAR); break; // [slash]
-//> two-char-tokens
       case '!':
         addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
         break;
@@ -74,8 +73,16 @@ class Scanner {
         break;
       case '/':
         if (match('/')) {
-          // A comment goes until the end of the line.
           while (peek() != '\n' && !isAtEnd()) advance();
+        } else if (match('*')) {
+          while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+            advance();
+          }
+
+          if (!isAtEnd()) {
+            advance(); // advance *
+            advance(); // advance /
+          }
         } else {
           addToken(TokenType.SLASH);
         }
