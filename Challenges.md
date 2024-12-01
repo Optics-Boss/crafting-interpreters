@@ -55,4 +55,18 @@ expr → expr ( "(" ( expr ( "," expr )* )REPEAT ")" | "." IDENTIFIER )AT_LEAST_
      OR NUMBER
 ```
 
+# Chapter 6
+See code
 
+# Chapter 7
+## 1
+I would allow only the comparison of numbers that are in a string format and parse those back to a number and then make the comparison. Because if i allow text strings that will lead to bugs and make the programming language more complicated and it will give it more bugs.
+
+## 3
+Java raises an exception when dividing and integer with a zero. When dividing a float with an zero it will produce an NAN or an INFINITY.
+
+# Chapter 8
+## 3
+I expected that it will print 3, instead i got an error. I ran the code in Javascript and there i also got a 3 back from the compiler.
+
+# Chapter 9

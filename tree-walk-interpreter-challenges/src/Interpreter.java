@@ -71,8 +71,7 @@ class Interpreter implements Expr.Visitor<Object>,
       Lox.runtimeError(error);
     }
   }
-//< Statements and State interpret
-//> evaluate
+
   private Object evaluate(Expr expr) {
     return expr.accept(this);
   }
@@ -130,68 +129,39 @@ class Interpreter implements Expr.Visitor<Object>,
       environment = new Environment(environment);
       environment.define("super", superclass);
     }
-//< Inheritance begin-superclass-environment
-//> interpret-methods
 
     Map<String, LoxFunction> methods = new HashMap<>();
     for (Stmt.Function method : stmt.methods) {
-/* Classes interpret-methods < Classes interpreter-method-initializer
-      LoxFunction function = new LoxFunction(method, environment);
-*/
-//> interpreter-method-initializer
       LoxFunction function = new LoxFunction(method, environment,
           method.name.lexeme.equals("init"));
-//< interpreter-method-initializer
       methods.put(method.name.lexeme, function);
     }
 
-/* Classes interpret-methods < Inheritance interpreter-construct-class
-    LoxClass klass = new LoxClass(stmt.name.lexeme, methods);
-*/
-//> Inheritance interpreter-construct-class
     LoxClass klass = new LoxClass(stmt.name.lexeme,
         (LoxClass)superclass, methods);
-//> end-superclass-environment
 
     if (superclass != null) {
       environment = environment.enclosing;
     }
-//< end-superclass-environment
 
-//< Inheritance interpreter-construct-class
-//< interpret-methods
-/* Classes interpreter-visit-class < Classes interpret-methods
-    LoxClass klass = new LoxClass(stmt.name.lexeme);
-*/
     environment.assign(stmt.name, klass);
     return null;
   }
-//< Classes interpreter-visit-class
-//> Statements and State visit-expression-stmt
+
   @Override
   public Void visitExpressionStmt(Stmt.Expression stmt) {
     evaluate(stmt.expression);
     return null;
   }
-//< Statements and State visit-expression-stmt
-//> Functions visit-function
+
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-/* Functions visit-function < Functions visit-closure
-    LoxFunction function = new LoxFunction(stmt);
-*/
-/* Functions visit-closure < Classes construct-function
-    LoxFunction function = new LoxFunction(stmt, environment);
-*/
-//> Classes construct-function
     LoxFunction function = new LoxFunction(stmt, environment,
                                            false);
-//< Classes construct-function
     environment.define(stmt.name.lexeme, function);
     return null;
   }
-//< Functions visit-function
-//> Control Flow visit-if
+
   @Override
   public Void visitIfStmt(Stmt.If stmt) {
     if (isTruthy(evaluate(stmt.condition))) {
@@ -201,16 +171,14 @@ class Interpreter implements Expr.Visitor<Object>,
     }
     return null;
   }
-//< Control Flow visit-if
-//> Statements and State visit-print
+
   @Override
   public Void visitPrintStmt(Stmt.Print stmt) {
     Object value = evaluate(stmt.expression);
     System.out.println(stringify(value));
     return null;
   }
-//< Statements and State visit-print
-//> Functions visit-return
+
   @Override
   public Void visitReturnStmt(Stmt.Return stmt) {
     Object value = null;
@@ -218,8 +186,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
     throw new Return(value);
   }
-//< Functions visit-return
-//> Statements and State visit-var
+
   @Override
   public Void visitVarStmt(Stmt.Var stmt) {
     Object value = null;
@@ -230,8 +197,7 @@ class Interpreter implements Expr.Visitor<Object>,
     environment.define(stmt.name.lexeme, value);
     return null;
   }
-//< Statements and State visit-var
-//> Control Flow visit-while
+
   @Override
   public Void visitWhileStmt(Stmt.While stmt) {
     while (isTruthy(evaluate(stmt.condition))) {
@@ -239,15 +205,10 @@ class Interpreter implements Expr.Visitor<Object>,
     }
     return null;
   }
-//< Control Flow visit-while
-//> Statements and State visit-assign
+
   @Override
   public Object visitAssignExpr(Expr.Assign expr) {
     Object value = evaluate(expr.value);
-/* Statements and State visit-assign < Resolving and Binding resolved-assign
-    environment.assign(expr.name, value);
-*/
-//> Resolving and Binding resolved-assign
 
     Integer distance = locals.get(expr);
     if (distance != null) {
@@ -463,9 +424,7 @@ class Interpreter implements Expr.Visitor<Object>,
       return globals.get(name);
     }
   }
-//< Resolving and Binding look-up-variable
-//< Statements and State visit-variable
-//> check-operand
+
   private void checkNumberOperand(Token operator, Object operand) {
     if (operand instanceof Double) return;
     throw new RuntimeError(operator, "Operand must be a number.");
@@ -486,18 +445,16 @@ class Interpreter implements Expr.Visitor<Object>,
     if (object instanceof Boolean) return (boolean)object;
     return true;
   }
-//< is-truthy
-//> is-equal
+
   private boolean isEqual(Object a, Object b) {
     if (a == null && b == null) return true;
     if (a == null) return false;
 
     return a.equals(b);
   }
-//< is-equal
-//> stringify
+
   private String stringify(Object object) {
-    if (object == null) return "nil";
+    if (object == null) throw new RuntimeException("variable isn't initialized");
 
     if (object instanceof Double) {
       String text = object.toString();
@@ -509,5 +466,4 @@ class Interpreter implements Expr.Visitor<Object>,
 
     return object.toString();
   }
-//< stringify
 }

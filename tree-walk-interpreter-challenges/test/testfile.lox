@@ -1,12 +1,15 @@
-/*
- This should be ignored
-*/
+var a = 1;
+{
+  var a = a + 2;
+  print a;
+}
 
 var a = 1, b = 2, c = 3;
 ( 1 < 2 ) ? print "if"; : print "else";
 
-var testZero = "Test " + 4 / 0;
-print testZero;
+var testNil;
+print testNil;
+
 
 var test = 1;
 print 1 + "test";
@@ -21,3 +24,7 @@ print a; // expect: after
 
 print a = "arg"; // expect: arg
 print a; // expect: arg
+
+/*
+ This should be ignored
+*/
