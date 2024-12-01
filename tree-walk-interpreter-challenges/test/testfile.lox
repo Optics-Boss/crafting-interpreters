@@ -3,6 +3,7 @@
 */
 
 var a = 1, b = 2, c = 3;
+( 1 < 2 ) ? print "if"; : print "else";
 
 var a = "before";
 print a; // expect: before

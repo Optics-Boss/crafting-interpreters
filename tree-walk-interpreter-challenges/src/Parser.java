@@ -64,7 +64,7 @@ class Parser {
   private Stmt statement() {
     if (match(TokenType.FOR)) return forStatement();
     if (match(TokenType.IF)) return ifStatement();
-//    if (match(TokenType.LEFT_PAREN)) return ternaryStatement();
+    if (match(TokenType.LEFT_PAREN)) return ternaryStatement();
     if (match(TokenType.PRINT)) return printStatement();
     if (match(TokenType.RETURN)) return returnStatement();
     if (match(TokenType.WHILE)) return whileStatement();
@@ -130,10 +130,18 @@ class Parser {
     return new Stmt.If(condition, thenBranch, elseBranch);
   }
 
-//  private Stmt ternaryStatement() {
-//    //TODO make a ternary statement
-//    return new Stmt.If();
-//  }
+  private Stmt ternaryStatement() {
+    Expr condition = expression();
+    consume(TokenType.RIGHT_PAREN, "Expect ')' in a ternary.");
+
+    consume(TokenType.QUESTION_MARK, "Expect '?' in a ternary.");
+    Stmt thenBranch = statement();
+
+    consume(TokenType.COLON, "Expect ':' in a ternary.");
+    Stmt elseBranch = statement();
+
+    return new Stmt.If(condition, thenBranch, elseBranch);
+  }
 
   private Stmt printStatement() {
     Expr value = expression();
