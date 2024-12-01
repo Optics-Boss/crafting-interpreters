@@ -5,6 +5,14 @@
 var a = 1, b = 2, c = 3;
 ( 1 < 2 ) ? print "if"; : print "else";
 
+var testZero = "Test " + 4 / 0;
+print testZero;
+
+var test = 1;
+print 1 + "test";
+print "test" + 1;
+print "test" + "string";
+
 var a = "before";
 print a; // expect: before
 
